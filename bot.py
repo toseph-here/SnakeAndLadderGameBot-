@@ -60,7 +60,6 @@ async def start_game(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global turn
     user = update.message.from_user
-
     if not game_started:
         await update.message.reply_text("❗Game not started. Use /startgame.")
         return
@@ -88,21 +87,20 @@ async def play(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if new_pos > 100:
             msg += f"🚫 Need exact {100 - pos} to reach 100. No move.\n"
         elif new_pos == 100:
-            reverse_ready[user.id] = True
-            msg += f"🎯 Reached 100! Now roll a 6 to reverse toward 1.\n"
+            reverse_mode[user.id] = True
+            msg += f"🎯 Reached 100! Now roll a 6 to begin returning to 1.\n"
             positions[user.id] = 100
         else:
             positions[user.id] = new_pos
             msg += f"➡️ Moved to {positions[user.id]}\n"
             msg += apply_snakes_and_ladders(user.id)
     else:
-        # reverse mode active
         if not reverse_ready[user.id]:
             if dice == 6:
                 reverse_ready[user.id] = True
-                msg += "✅ Rolled a 6! Now start moving back toward 1.\n"
+                msg += "✅ Rolled a 6! Start moving toward 1.\n"
             else:
-                msg += "❗ Need a 6 to start reverse journey.\n"
+                msg += "❗ Need a 6 to begin reverse journey.\n"
                 await update.message.reply_text(msg)
                 await next_turn(user.id, update)
                 return
